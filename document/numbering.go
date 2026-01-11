@@ -61,7 +61,7 @@ func (n Numbering) InitializeDefault() {
 		lvl.Suff.ValAttr = wml.ST_LevelSuffixNothing
 
 		lvl.LvlText = wml.NewCT_LevelText()
-		lvl.LvlText.ValAttr = unioffice.String("ï‚?)
+		lvl.LvlText.ValAttr = unioffice.String("")
 
 		lvl.LvlJc = wml.NewCT_Jc()
 		lvl.LvlJc.ValAttr = wml.ST_JcLeft
