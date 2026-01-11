@@ -244,6 +244,10 @@ func New() *Presentation {
 
 	thmRel := common.NewRelationships()
 	p.themeRels = append(p.themeRels, thmRel)
+	p.x.SldSz = pml.NewCT_SlideSize()
+    p.x.SldSz.CxAttr = int64(10 * measurement.Inch)      // 宽度：10英寸
+    p.x.SldSz.CyAttr = int64(5.625 * measurement.Inch)   // 高度：5.625英寸
+    p.x.SldSz.TypeAttr = pml.ST_SlideSizeOrientationLandscape  // 横向
 
 	return p
 }
@@ -888,4 +892,69 @@ func (p *Presentation) createCustomProperties() {
 func (p *Presentation) addCustomRelationships() {
 	p.ContentTypes.AddOverride("/docProps/custom.xml", "application/vnd.openxmlformats-officedocument.custom-properties+xml")
 	p.Rels.AddRelationship("docProps/custom.xml", unioffice.CustomPropertiesType)
+}
+
+// SetSlideSize sets the slide size (width and height) for the presentation.
+// Default values are 12192000 EMU (10 inches) width and 6858000 EMU (5.625 inches) height (16:9 aspect ratio).
+func (p *Presentation) SetSlideSize(width, height measurement.Distance) {
+    if p.x.SldSz == nil {
+        p.x.SldSz = pml.NewCT_SlideSize()
+    }
+    p.x.SldSz.CxAttr = int64(width)
+    p.x.SldSz.CyAttr = int64(height)
+}
+
+// SetSlideSizeInches sets the slide size in inches.
+func (p *Presentation) SetSlideSizeInches(width, height float64) {
+    p.SetSlideSize(measurement.Inch*measurement.Distance(width), 
+                   measurement.Inch*measurement.Distance(height))
+}
+
+// SetSlideSizeCentimeters sets the slide size in centimeters.
+func (p *Presentation) SetSlideSizeCentimeters(width, height float64) {
+    p.SetSlideSize(measurement.Centimeter*measurement.Distance(width), 
+                   measurement.Centimeter*measurement.Distance(height))
+}
+
+// SetSlideSizeStandard sets the slide size to standard 4:3 aspect ratio.
+func (p *Presentation) SetSlideSizeStandard() {
+    // Standard 4:3 size: 10 inches x 7.5 inches
+    p.SetSlideSizeInches(10, 7.5)
+}
+
+// SetSlideSizeWidescreen sets the slide size to widescreen 16:9 aspect ratio.
+func (p *Presentation) SetSlideSizeWidescreen() {
+    // Widescreen 16:9 size: 10 inches x 5.625 inches (default)
+    p.SetSlideSizeInches(10, 5.625)
+}
+
+// SetSlideSizeLetter sets the slide size to letter paper size.
+func (p *Presentation) SetSlideSizeLetter() {
+    // Letter paper size: 8.5 inches x 11 inches
+    p.SetSlideSizeInches(8.5, 11)
+}
+
+// SetSlideSizeA4 sets the slide size to A4 paper size.
+func (p *Presentation) SetSlideSizeA4() {
+    // A4 paper size: 8.27 inches x 11.69 inches
+    p.SetSlideSizeInches(8.27, 11.69)
+}
+
+// SetSlideOrientation sets the slide orientation.
+// orientation should be pml.ST_SlideSizeOrientationPortrait or pml.ST_SlideSizeOrientationLandscape.
+func (p *Presentation) SetSlideOrientation(orientation pml.ST_SlideSizeOrientation) {
+    if p.x.SldSz == nil {
+        p.x.SldSz = pml.NewCT_SlideSize()
+    }
+    p.x.SldSz.TypeAttr = orientation
+}
+
+// SetSlideOrientationPortrait sets the slide orientation to portrait.
+func (p *Presentation) SetSlideOrientationPortrait() {
+    p.SetSlideOrientation(pml.ST_SlideSizeOrientationPortrait)
+}
+
+// SetSlideOrientationLandscape sets the slide orientation to landscape (default).
+func (p *Presentation) SetSlideOrientationLandscape() {
+    p.SetSlideOrientation(pml.ST_SlideSizeOrientationLandscape)
 }
